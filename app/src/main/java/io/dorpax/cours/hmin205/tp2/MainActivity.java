@@ -18,14 +18,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        SensorManager smm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         LinearLayout layout = findViewById(R.id.linear_layout);
-        List<Sensor> sensors = smm.getSensorList(Sensor.TYPE_ALL);
+        List<Sensor> sensors = sensorManager.getSensorList(Sensor.TYPE_ALL);
 
         for (Sensor sensor : sensors) {
             TextView tv = new TextView(this);
             tv.setText(sensor.getName());
             tv.setTextSize(20);
+
+            boolean available = sensorManager.getDefaultSensor(sensor.getType()) != null;
+            tv.setTextColor(getResources().getColor(available ? R.color.colorSuccess : R.color.colorDanger, null));
+
             layout.addView(tv);
         }
     }
