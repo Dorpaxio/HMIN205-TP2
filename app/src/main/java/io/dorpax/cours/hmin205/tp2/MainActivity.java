@@ -39,19 +39,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     public void onSensorChanged(SensorEvent event) {
         float x = event.values[0],
-                y = event.values[1],
-                z = event.values[2];
+                y = event.values[1];
 
-        float avg = (x + y + z) / 3;
+        TextView text = findViewById(R.id.textView3);
 
-        ((TextView) findViewById(R.id.textView3)).setText("X:" + x + " Y:" + y + " Z:" + z);
+        double direction = Math.atan2(y,  x) / Math.PI * 180;
 
-        if (avg > 0) {
-            layout.setBackgroundColor(getResources().getColor(R.color.colorSuccess, null));
-        } else if (avg == 0) {
-            layout.setBackgroundColor(getResources().getColor(R.color.colorBlack, null));
+        if(direction > -45 && direction < 45) {
+            text.setText("Gauche");
+        } else if(direction > 45 && direction < 135){
+            text.setText("Haut");
+        } else if(direction > 135 && direction < 180 || direction > -180 && direction < -135) {
+            text.setText("Droite");
         } else {
-            layout.setBackgroundColor(getResources().getColor(R.color.colorDanger, null));
+            text.setText("Bas");
         }
     }
 
