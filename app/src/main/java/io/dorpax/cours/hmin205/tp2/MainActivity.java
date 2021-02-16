@@ -5,6 +5,8 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraManager;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -17,9 +19,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
-    private Sensor accelerometer;
+    private Sensor proximity;
     private SensorManager sensorManager;
-    private View layout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,31 +29,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
-        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        if (accelerometer != null) {
-            sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        proximity = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+        if (proximity != null) {
+            sensorManager.registerListener(this, proximity, SensorManager.SENSOR_DELAY_NORMAL);
         }
-
-        layout = findViewById(R.id.constraint);
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        float x = event.values[0],
-                y = event.values[1];
-
-        TextView text = findViewById(R.id.textView3);
-
-        double direction = Math.atan2(y,  x) / Math.PI * 180;
-
-        if(direction > -45 && direction < 45) {
-            text.setText("Gauche");
-        } else if(direction > 45 && direction < 135){
-            text.setText("Haut");
-        } else if(direction > 135 && direction < 180 || direction > -180 && direction < -135) {
-            text.setText("Droite");
+        TextView tv = findViewById(R.id.textView3);
+        if(event.values[0] <= 3) {
+            tv.setText("Proche !");
         } else {
-            text.setText("Bas");
+            tv.setText("Loin !");
         }
     }
 
@@ -64,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     protected void onResume() {
         super.onResume();
-        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, proximity, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
